@@ -1,47 +1,83 @@
 import mongoose, { model, Schema } from "mongoose";
+
 const productSchema = new Schema(
   {
     images: {
-      type: [String],
-      require: true,
+      type: [String], // Keeping the array of image URLs
+      required: true,
     },
     brand: {
       type: String,
-      require: true,
+      required: true,
     },
     quantity: {
-      type: String,
-      require: true,
-    },
-    images: {
-      type: String,
-      require: true,
+      type: Number, 
+      required: true,
     },
     price: {
       type: Number,
-      require: true,
+      required: true,
     },
     category: {
       type: String,
-      require: true,
+      required: true,
     },
     feedback: [
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
-          require: true,
+          required: true,
         },
-        Comment: {
+        comment: {
           type: String,
-          require: true,
+          required: true,
+        },
+        rating: {
+          type: Number,
+          min: 1,
+          max: 5, 
+          required: true,
         },
       },
     ],
+    sales: {
+      type: Number, 
+      default: 0,
+    },
+    averageRating: {
+      type: Number, 
+      default: 0,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const Product = mongoose.model(productSchema, "Product");
+// Pre-save middleware to calculate the average rating
+productSchema.pre("save", function (next) {
+  if (this.feedback.length > 0) {
+    const totalRating = this.feedback.reduce(
+      (acc, feedback) => acc + feedback.rating,
+      0
+    );
+    this.averageRating = totalRating / this.feedback.length;
+  } else {
+    this.averageRating = 0;
+  }
+  next();
+});
+
+// Static method to update sales count
+productSchema.statics.recordSale = async function (productId) {
+  const product = await this.findById(productId);
+  if (product) {
+    product.sales += 1;
+    await product.save();
+  }
+};
+
+const Product = mongoose.model("Product", productSchema);
+
+export default Product;
