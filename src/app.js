@@ -9,6 +9,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(express.static("public"))
 app.use(express.json({ limit }));
 
 app.use(express.urlencoded({ extended: true, limit }));

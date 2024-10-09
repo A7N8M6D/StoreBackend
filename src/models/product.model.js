@@ -11,7 +11,7 @@ const productSchema = new Schema(
       required: true,
     },
     quantity: {
-      type: Number, 
+      type: Number,
       required: true,
     },
     price: {
@@ -21,6 +21,10 @@ const productSchema = new Schema(
     category: {
       type: String,
       required: true,
+    },
+    images:{
+      type:[String],
+      
     },
     feedback: [
       {
@@ -36,17 +40,17 @@ const productSchema = new Schema(
         rating: {
           type: Number,
           min: 1,
-          max: 5, 
+          max: 5,
           required: true,
         },
       },
     ],
     sales: {
-      type: Number, 
+      type: Number,
       default: 0,
     },
     averageRating: {
-      type: Number, 
+      type: Number,
       default: 0,
     },
   },

@@ -4,21 +4,21 @@ const token =req.cookies?.AccessToken;
 console.log(`Token ${token}`)
 if(!token)
 {
- res.status(400).json({error:"Token is required"})
+ return res.status(400).json({error:"Token is required"})
 }
 try
 {
 const tokenVerified= await jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
 if(!tokenVerified)
 {
-    res.status(400).json({error:"Unathorized User Request"})  
+    return res.status(400).json({error:"Unathorized User Request"})  
 }
 req.user=tokenVerified;
 next()
 }
 catch(error)
 {
-    res.status(400).json({error:"Error while Verify the token"})  
+    return res.status(400).json({error:"Error while Verify the token"})  
 }
 }
 
