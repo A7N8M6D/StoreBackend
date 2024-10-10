@@ -10,6 +10,10 @@ const productSchema = new Schema(
       type: String,
       required: true,
     },
+    name:{
+      type:String,
+      require:true
+    },
     quantity: {
       type: Number,
       required: true,
@@ -53,6 +57,11 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
+    user:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"User",
+      require:true
+    }
   },
   {
     timestamps: true,

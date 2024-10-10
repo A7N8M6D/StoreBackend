@@ -14,6 +14,7 @@ if(!tokenVerified)
     return res.status(400).json({error:"Unathorized User Request"})  
 }
 req.user=tokenVerified;
+console.log(`Auth User ${tokenVerified}`)
 next()
 }
 catch(error)

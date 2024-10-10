@@ -14,9 +14,9 @@ app.use(express.json({ limit }));
 
 app.use(express.urlencoded({ extended: true, limit }));
 app.use(cookieParser())
-import userRouter from "./routes/user.route.js";
-import productRouter from "./routes/product.route.js";
-import categoryRouter from "./routes/category.route.js";
+import userRouter from "./routes/user.routes.js";
+import productRouter from "./routes/product.routes.js";
+import categoryRouter from "./routes/category.routes.js";
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/product", productRouter);
 app.use("/api/v1/category", categoryRouter);
