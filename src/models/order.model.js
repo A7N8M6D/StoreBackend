@@ -27,8 +27,8 @@ const orderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["Accepted", "Processed", "Shipped", "Delivered"],
-      default: "Accepted",
+      enum: ["Pending","Accepted","Processed", "Shipped", "Delivered"],
+      default: "Pending",
     },
     createdAt: {
       type: Date,
@@ -43,4 +43,4 @@ const orderSchema = new Schema(
     timestamps: true,
   }
 );
-const Order=mongoose.model("Order",orderSchema)
+export const Order=mongoose.model("Order",orderSchema)

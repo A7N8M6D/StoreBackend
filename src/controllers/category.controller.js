@@ -47,12 +47,14 @@ const getCategory = async (req, res) => {
   try {
     const AllCategory = await Category.find();
     if (AllCategory) {
-      res
+      return res
         .status(200)
         .json({ message: "Successfully Fetched Categories", AllCategory });
     }
   } catch (error) {
-    res.status(200).json({ message: `Failed to Fetched Categories ${error}` });
+    return res
+      .status(200)
+      .json({ message: `Failed to Fetched Categories ${error}` });
   }
 };
 /*
@@ -63,18 +65,20 @@ const getCategory = async (req, res) => {
 
 */
 const deleteCategory = async (req, res) => {
-    try {
-        const {CategoryId}=req.query
-      const deleteCategory = await Category.findByIdAndDelete(CategoryId);
-      if (deleteCategory) {
-        res
-          .status(200)
-          .json({ message: "Successfully Delete Categories"});
-      }
-    } catch (error) {
-      res.status(200).json({ message: `Failed to Delete Categories ${error}` });
+  try {
+    const { CategoryId } = req.query;
+    const deleteCategory = await Category.findByIdAndDelete(CategoryId);
+    if (deleteCategory) {
+      return res
+        .status(200)
+        .json({ message: "Successfully Delete Categories" });
     }
-  };
+  } catch (error) {
+    return res
+      .status(200)
+      .json({ message: `Failed to Delete Categories ${error}` });
+  }
+};
 /*
  
  
@@ -83,25 +87,24 @@ const deleteCategory = async (req, res) => {
 
 */
 const UpdateCategory = async (req, res) => {
-    try {
-        const {CategoryId}=req.query
-        const {name}=req.body
-      const category = await Category.findById(CategoryId);
-      if (!Category) {
-        res
-          .status(400)
-          .json({ message: "Category not Exist "});
-      }
-      category.name=name;
-      const SaveCategory=await category.save();
-      if(SaveCategory)
-      {
-        res
-        .status(200)
-        .json({ message: "Category Updated ",SaveCategory});
-      }
-    } catch (error) {
-      res.status(200).json({ message: `Failed to Delete Categories ${error}` });
+  try {
+    const { CategoryId } = req.query;
+    const { name } = req.body;
+    const category = await Category.findById(CategoryId);
+    if (!Category) {
+      return res.status(400).json({ message: "Category not Exist " });
     }
-  };
-export { addCateogory, getCategory ,deleteCategory,UpdateCategory};
+    category.name = name;
+    const SaveCategory = await category.save();
+    if (SaveCategory) {
+      return res
+        .status(200)
+        .json({ message: "Category Updated ", SaveCategory });
+    }
+  } catch (error) {
+    return res
+      .status(200)
+      .json({ message: `Failed to Delete Categories ${error}` });
+  }
+};
+export { addCateogory, getCategory, deleteCategory, UpdateCategory };
