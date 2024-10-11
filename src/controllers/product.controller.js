@@ -1,6 +1,7 @@
 import { parse } from "dotenv";
 import Product from "../models/product.model.js";
 
+
 /*
  
  
@@ -12,13 +13,13 @@ const addProduct = async (req, res) => {
   try {
     console.log(`Product Add Controller`);
     const User = req.user.id;
-    console.log(`User ${User}`)
+    console.log(`User ${User}`);
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: "No files uploaded" });
     }
     const images = req.files.images.map((file) => file.path);
     console.log(`Images ${images[0]}`);
-    let { brand, quantity, price, category } = req.body;
+    let { brand, quantity, price, category ,name} = req.body;
     quantity = parseInt(quantity, 10);
     price = parseFloat(price);
     parseInt(req.body.quantity, 10);
@@ -53,6 +54,21 @@ const addProduct = async (req, res) => {
       return res
         .status(400)
         .json({ error: "Quantity must contain at least two Number" });
+    }
+    //name Validation
+    if (!name) {
+      return res.status(400).json({ error: "name is required" });
+    }
+
+    if (typeof name !== "string") {
+      return res.status(400).json({ error: "name must be a String" });
+    }
+
+    // Check for the minimum length of the brand (if you want at least 2 characters)
+    if (name.length < 1) {
+      return res
+        .status(400)
+        .json({ error: "name must contain at least two Number" });
     }
 
     //Price Validation
@@ -90,6 +106,7 @@ const addProduct = async (req, res) => {
       images,
       category,
       price,
+      name,
       quantity,
       user: User,
     });
@@ -112,11 +129,10 @@ const addProduct = async (req, res) => {
 */
 const getProductbyId = async (req, res) => {
   try {
-    
     const { category, search, brand } = req.query;
-    const page =parseInt(req.query.page) ||1
-    const limit=10;
-    const skip=(page-1)*limit;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
     console.log(`category=${category} search=${search}, brand=${brand}`);
     let filter = {};
     if (category.trim() !== "") {
@@ -142,15 +158,18 @@ const getProductbyId = async (req, res) => {
     }
     // console.log(User);
     console.log("filter", filter);
-    const UserProducts = await Product.find(filter).skip(skip).limit(limit).exec();
+    const UserProducts = await Product.find(filter)
+      .skip(skip)
+      .limit(limit)
+      .exec();
 
-    const TotalProducts=await Product.countDocuments(filter);
-    const TotalPages=Math.ceil(TotalProducts/limit)
+    const TotalProducts = await Product.countDocuments(filter);
+    const TotalPages = Math.ceil(TotalProducts / limit);
     if (UserProducts.length > 0) {
       return res.status(200).json({
         message: "Products retrieved successfully",
         UserProducts,
-        TotalPages:TotalPages
+        TotalPages: TotalPages,
       });
     } else {
       return res.status(404).json({
@@ -170,33 +189,76 @@ const getProductbyId = async (req, res) => {
 
 
 */
-const deleteProductbyId = async (req , res) => {
+const deleteProductbyId = async (req, res) => {
   try {
     const { ProductId } = req.query;
-    console.log(`Product Id ${ProductId}`)
+    console.log(`Product Id ${ProductId}`);
     const User = req.user.id;
     const ProductById = await Product.findById(ProductId);
     if (!ProductById) {
       return res.status(400).json({ message: "Product Not Found" });
     }
-    console.log(`User ${User}`)
+    console.log(`User ${User}`);
     console.log(`Product ${ProductById.user}`);
-   if(JSON.stringify( User) !== JSON.stringify( ProductById.user))
-   {
-    return res.status(400).json({ message: "Product not owned by you" });
-   }
-   const ProductDeleted=await Product.findByIdAndDelete(ProductId)
-   if(ProductDeleted)
-   {
-
-     return res.status(200).json({ message: "Product deleted" });
-   }
-   else{
-
-    return res.status(500).json({ message: "Failed to deleted" });
-  }
+    if (JSON.stringify(User) !== JSON.stringify(ProductById.user)) {
+      return res.status(400).json({ message: "Product not owned by you" });
+    }
+    const ProductDeleted = await Product.findByIdAndDelete(ProductId);
+    if (ProductDeleted) {
+      return res.status(200).json({ message: "Product deleted" });
+    } else {
+      return res.status(500).json({ message: "Failed to deleted" });
+    }
   } catch (error) {
     return res.status(200).json({ message: "Failed to Data in the Data base" });
   }
 };
-export { addProduct, getProductbyId,deleteProductbyId };
+/*
+ 
+ 
+-----------------        Update Product         -----------------
+
+
+*/
+const updateProduct = async (req, res) => {
+  try {
+    let { brand, quantity, price, category, name } = req.body;
+console.log(`brand, quantity, price, category, name=${name} `)
+    // Convert quantity and price to integers if provided
+    quantity = parseInt(quantity);
+    price = parseInt(price);
+
+    const { ProductId } = req.query;
+    
+    // Find the product by its ID
+    const product = await Product.findById(ProductId);
+    if (!product) {
+      return res.status(400).json({ message: "Product Not Found" });
+    }
+
+    // Update product fields
+    if (brand) product.brand = brand;
+    if (quantity) product.quantity = quantity;
+    if (price) product.price = price;
+    if (category) product.category = category;
+    if (name) product.name = name;
+
+    // Check if new images are provided
+    if (req.files && req.files.images) {
+      const images = req.files.images.map((file) => file.path);
+      console.log(`Images: ${images[0]}`);
+      product.images = images;  // Replace all images with the new ones
+    }
+
+    // Save the updated product to the database
+    const UpdatedProduct = await product.save();
+    
+    // Return the updated product in the response
+    return res.status(200).json({ message: "Update Successful", UpdatedProduct });
+
+  } catch (error) {
+    // Handle any errors during the update
+    return res.status(500).json({ message: `Failed to Update: ${error.message}` });
+  }
+};
+export { addProduct, getProductbyId, deleteProductbyId, updateProduct };

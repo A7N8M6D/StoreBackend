@@ -139,14 +139,11 @@ const getallUser = async (req, res) => {
   try {
     const { UserType } = req.query;
 
+    const page = parseInt(req.query.page) || 1;
+    const limit = 12;
+    const skip = (page - 1) * limit;
     if (UserType.length != 0) {
-      const UserTypeValidation = validation(
-        res,
-        "userType",
-        UserType,
-        "string",
-        3
-      );
+      const UserTypeValidation = validation("userType", UserType, "string", 3);
       if (UserTypeValidation) {
         return res.status(400).json(UserTypeValidation);
       }
@@ -155,17 +152,23 @@ const getallUser = async (req, res) => {
     const filter = UserType ? { userType: UserType } : {};
     let users;
     if (filter) {
-      users = await User.find(filter);
+      users = await User.find(filter).skip(skip).limit(limit).exec();
     } else {
-      users = await User.find();
+      users = await User.find().skip(skip).limit(limit).exec();
     }
     if (users.length === 0) {
       return res.status(404).json({ message: "No Users Found" });
     }
     console.log(users);
+    const TotalUsers = await User.countDocuments(filter);
+    const TotalPages = Math.ceil(TotalUsers / limit);
     return res
       .status(200)
-      .json({ message: "Users Fetched Successfully", users });
+      .json({
+        message: "Users Fetched Successfully",
+        users,
+        TotalPages: TotalPages,
+      });
   } catch (error) {
     return res
       .status(500)
@@ -173,7 +176,6 @@ const getallUser = async (req, res) => {
   }
 };
 // --------------------------------------------------------------
-
 
 /*
  
@@ -194,7 +196,6 @@ const deleteUser = async (req, res) => {
 };
 // --------------------------------------------------------------
 
-
 /*
  
 -----------------        Update User         -----------------
@@ -206,7 +207,9 @@ const UpdateUser = async (req, res) => {
     const user = req.user.id;
     console.log(`User ${user}`);
     const ExistUser = await User.findById(user);
-    if (!ExistUser) {return res.status(400).json({ error: "User Not Exist in the Data Base" });}
+    if (!ExistUser) {
+      return res.status(400).json({ error: "User Not Exist in the Data Base" });
+    }
     const ValidationFields = [
       { name: "User Name", value: username, type: "string", length: 6 },
       { name: "Number", value: number, type: "number", length: 12 },
@@ -218,15 +221,29 @@ const UpdateUser = async (req, res) => {
     ValidationFields.forEach(({ name, value, type, length }) => {
       if (value) {
         const ValidationResults = validation(name, value, type, length);
-        if (ValidationResults) {return res.status(400).json({ ValidationResults });}
+        if (ValidationResults) {
+          return res.status(400).json({ ValidationResults });
+        }
       }
     });
-    if(username){ ExistUser.username = username}
-    if(number){ ExistUser.number = number}
-    if(country){ExistUser.country = country}
-    if(town){ExistUser.town = town}
-    if(area){ExistUser.area = area}
-    if(email){ExistUser.email = email}
+    if (username) {
+      ExistUser.username = username;
+    }
+    if (number) {
+      ExistUser.number = number;
+    }
+    if (country) {
+      ExistUser.country = country;
+    }
+    if (town) {
+      ExistUser.town = town;
+    }
+    if (area) {
+      ExistUser.area = area;
+    }
+    if (email) {
+      ExistUser.email = email;
+    }
     const UpdateUser = await ExistUser.save({ validateBeforeSave: false });
     return res.status(200).json({ message: "Updated Successful", UpdateUser });
   } catch (error) {
@@ -241,7 +258,7 @@ const UpdateUser = async (req, res) => {
 
 */
 const forgetEmail_password = async (req, res) => {
-  const { email, username,password,token} = req.body; // Removed password and Token since they are not used
+  const { email, username, password, token } = req.body; // Removed password and Token since they are not used
   console.log(`email=${email} username=${username} password=${password}`);
 
   let filter = {};
@@ -250,42 +267,37 @@ const forgetEmail_password = async (req, res) => {
 
   const existedUser = await User.findOne(filter);
   console.log(`ExistedUser=${existedUser}`);
-  
+
   if (!existedUser) {
     return res.status(400).json({ error: "User does not exist" });
   }
-  if(!password)
-  {
-  const userToken = await existedUser.generatePasswordResetToken();
-  if (!userToken) {
-    return res.status(400).json({ message: "Failed to generate token", existedUser });
-  }
-  const { message } = await passwordRecover(existedUser.email, userToken);
-  if (message.includes("Failed")) {
-    return res.status(400).json({ message });
+  if (!password) {
+    const userToken = await existedUser.generatePasswordResetToken();
+    if (!userToken) {
+      return res
+        .status(400)
+        .json({ message: "Failed to generate token", existedUser });
+    }
+    const { message } = await passwordRecover(existedUser.email, userToken);
+    if (message.includes("Failed")) {
+      return res.status(400).json({ message });
+    } else {
+      return res.status(200).json({ message });
+    }
   } else {
-   return res.status(200).json({ message });
-  }
-  }
-  else{
-    console.log(`Token Recived ${token}`)
-    const verifiedToken=await existedUser.verifyResetToken(token)
-    console.log(`Verification ${verifiedToken}`)
+    console.log(`Token Recived ${token}`);
+    const verifiedToken = await existedUser.verifyResetToken(token);
+    console.log(`Verification ${verifiedToken}`);
 
-    if(verifiedToken)
-    {
-        const passwordReset=existedUser.resetPassword(password)
-        if(passwordReset)
-        {
-         return res.status(200).json({message:"Password Reset Successful"})
-        }
-    }
-    else{
-       return res.status(200).json({message:"Invalid Token or E-Mail"})
+    if (verifiedToken) {
+      const passwordReset = existedUser.resetPassword(password);
+      if (passwordReset) {
+        return res.status(200).json({ message: "Password Reset Successful" });
+      }
+    } else {
+      return res.status(200).json({ message: "Invalid Token or E-Mail" });
     }
   }
-  
-  
 };
 
 // --------------------------------------------------------------
@@ -297,5 +309,5 @@ export {
   deleteUser,
   getallUser,
   UpdateUser,
-  forgetEmail_password
+  forgetEmail_password,
 };
