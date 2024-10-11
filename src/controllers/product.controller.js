@@ -18,6 +18,7 @@ const addProduct = async (req, res) => {
       return res.status(400).json({ error: "No files uploaded" });
     }
     const images = req.files.images.map((file) => file.path);
+   
     console.log(`Images ${images[0]}`);
     let { brand, quantity, price, category ,name} = req.body;
     quantity = parseInt(quantity, 10);
@@ -222,43 +223,34 @@ const deleteProductbyId = async (req, res) => {
 */
 const updateProduct = async (req, res) => {
   try {
-    let { brand, quantity, price, category, name } = req.body;
-console.log(`brand, quantity, price, category, name=${name} `)
-    // Convert quantity and price to integers if provided
-    quantity = parseInt(quantity);
-    price = parseInt(price);
-
-    const { ProductId } = req.query;
-    
-    // Find the product by its ID
-    const product = await Product.findById(ProductId);
-    if (!product) {
-      return res.status(400).json({ message: "Product Not Found" });
+    let { brand, quantity, price, category ,name} = req.body;
+    quantity=parseInt(quantity)
+    price= parseInt(price)
+    const {ProductId}=req.query
+    const product=await Product.findById(ProductId)
+    if(!product)
+    {
+       return res.status(400).json({message:"Product Not Found"})
     }
-
-    // Update product fields
-    if (brand) product.brand = brand;
-    if (quantity) product.quantity = quantity;
-    if (price) product.price = price;
-    if (category) product.category = category;
-    if (name) product.name = name;
-
-    // Check if new images are provided
-    if (req.files && req.files.images) {
-      const images = req.files.images.map((file) => file.path);
-      console.log(`Images: ${images[0]}`);
-      product.images = images;  // Replace all images with the new ones
-    }
-
-    // Save the updated product to the database
-    const UpdatedProduct = await product.save();
+    if(brand) product.brand=brand
+    if(quantity) product.quantity=quantity
+    if(price) product.price=price
+    if(category) product.category=category
+    if(name) product.name=name
+    if(req.files && req.files.images){
+    const images = req.files.images.map((file) => file.path);
+    console.log(`Images ${images[0]}`);
     
-    // Return the updated product in the response
-    return res.status(200).json({ message: "Update Successful", UpdatedProduct });
-
+    product.images=images
+    }
+    console.log(`Images ${product.images[0]}`)
+    const UpdatedProduct=await product.save();
+     if(UpdatedProduct)
+     {
+      return res.status(200).json({ message: `Updated Successful` ,UpdatedProduct});  
+     }
   } catch (error) {
-    // Handle any errors during the update
-    return res.status(500).json({ message: `Failed to Update: ${error.message}` });
+    return res.status(500).json({ message: `Failed to Update ${error}` });
   }
 };
 export { addProduct, getProductbyId, deleteProductbyId, updateProduct };
