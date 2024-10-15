@@ -14,27 +14,79 @@ const registerUser = async (req, res) => {
     req.body;
 
   // validation
-  const UsernameValidation = validation("username", username, "string", 2);
-  if (UsernameValidation) {
-    return res.status(400).json(UsernameValidation);
-  }
-  const NumberValidation = validation("number", number, "number", 10);
-  if (NumberValidation) {
-    return res.status(400).json(NumberValidation);
-  }
-  const Emailvalidation = validation("E-mail", email, "string", 10);
-  if (Emailvalidation) {
-    return res.status(400).json(Emailvalidation);
-  }
-  const UserTypeValidation = validation("userType", userType, "string", 2);
-  if (UserTypeValidation) {
-    return res.status(400).json(UserTypeValidation);
+  if (!username) {
+    return res.status(400).json({ error: "username is required" });
   }
 
-  const PasswordValidation = validation("password", password, "string", 8);
-  if (PasswordValidation) {
-    return res.status(400).json(PasswordValidation);
+  if (typeof username !== "string") {
+    return res.status(400).json({ error: "username must be a string" });
   }
+
+  // Check for the minimum length of the brand (if you want at least 2 characters)
+  if (username.length < 7) {
+    return res
+      .status(400)
+      .json({ error: "username must contain at least seven characters" });
+  }
+
+  if (!number) {
+    return res.status(400).json({ error: "number is required" });
+  }
+
+  if (typeof number !== "number") {
+    return res.status(400).json({ error: "number must be a string" });
+  }
+
+  // Check for the minimum length of the brand (if you want at least 2 characters)
+  if (number.length < 7) {
+    return res
+      .status(400)
+      .json({ error: "number must contain at least seven characters" });
+  }
+  if (!email) {
+    return res.status(400).json({ error: "email is required" });
+  }
+
+  if (typeof email !== "string") {
+    return res.status(400).json({ error: "email must be a string" });
+  }
+
+  // Check for the minimum length of the brand (if you want at least 2 characters)
+  if (email.length < 7) {
+    return res
+      .status(400)
+      .json({ error: "email must contain at least seven characters" });
+  }
+  if (!userType) {
+    return res.status(400).json({ error: "userType is required" });
+  }
+
+  if (typeof userType !== "string") {
+    return res.status(400).json({ error: "userType must be a string" });
+  }
+
+  // Check for the minimum length of the brand (if you want at least 2 characters)
+  if (userType.length < 7) {
+    return res
+      .status(400)
+      .json({ error: "userType must contain at least seven characters" });
+  }
+  if (!password) {
+    return res.status(400).json({ error: "password is required" });
+  }
+
+  if (typeof password !== "string") {
+    return res.status(400).json({ error: "password must be a string" });
+  }
+
+  // Check for the minimum length of the brand (if you want at least 2 characters)
+  if (password.length < 7) {
+    return res
+      .status(400)
+      .json({ error: "password must contain at least seven characters" });
+  }
+
+
 
   // E-Mail Check Existed or not
 
@@ -60,6 +112,9 @@ const registerUser = async (req, res) => {
       email,
       userType,
       password,
+      country,
+      town,
+      area
     });
     return res.status(200).json({ message: `User Created`, user });
   } catch (error) {
