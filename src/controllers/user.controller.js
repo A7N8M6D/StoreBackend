@@ -153,10 +153,11 @@ const signinUser = async (req, res) => {
   }
 
   const AccessToken = await ExistedUser.generateAccessToken();
-  const options = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
+     const options = {
+      sameSite: 'None', // Required for cross-origin cookies
+      secure: true,
+      path: '/',
+  }
   return res
     .status(200)
     .cookie("AccessToken", AccessToken, options)
