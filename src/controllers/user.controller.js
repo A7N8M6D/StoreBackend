@@ -23,7 +23,7 @@ const registerUser = async (req, res) => {
   }
 
   // Check for the minimum length of the brand (if you want at least 2 characters)
-  if (username.length < 7) {
+  if (username.length < 2) {
     return res
       .status(400)
       .json({ error: "username must contain at least seven characters" });
@@ -38,7 +38,7 @@ const registerUser = async (req, res) => {
   }
 
   // Check for the minimum length of the brand (if you want at least 2 characters)
-  if (number.length < 7) {
+  if (number.length < 2) {
     return res
       .status(400)
       .json({ error: "number must contain at least seven characters" });
@@ -52,7 +52,7 @@ const registerUser = async (req, res) => {
   }
 
   // Check for the minimum length of the brand (if you want at least 2 characters)
-  if (email.length < 7) {
+  if (email.length < 2) {
     return res
       .status(400)
       .json({ error: "email must contain at least seven characters" });
@@ -66,7 +66,7 @@ const registerUser = async (req, res) => {
   }
 
   // Check for the minimum length of the brand (if you want at least 2 characters)
-  if (userType.length < 7) {
+  if (userType.length < 2) {
     return res
       .status(400)
       .json({ error: "userType must contain at least seven characters" });
@@ -80,7 +80,7 @@ const registerUser = async (req, res) => {
   }
 
   // Check for the minimum length of the brand (if you want at least 2 characters)
-  if (password.length < 7) {
+  if (password.length < 2) {
     return res
       .status(400)
       .json({ error: "password must contain at least seven characters" });
