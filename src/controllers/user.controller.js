@@ -161,7 +161,7 @@ const signinUser = async (req, res) => {
   return res
     .status(200)
     .cookie("AccessToken", AccessToken, options)
-    .json({ message: `Login Successfully`, AccessToken: AccessToken });
+    .json({ message: `Login Successfully`, AccessToken: AccessToken,ExistedUser:ExistedUser });
 };
 // --------------------------------------------------------------
 
