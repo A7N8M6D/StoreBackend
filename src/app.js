@@ -22,6 +22,10 @@ import categoryRouter from "./routes/category.routes.js";
 import orderRouter from "./routes/order.routes.js";
 import managerRouter from "./routes/manager.routes.js";
 import couponRouter from "./routes/manager.routes.js";
+app.use("/", (req,res)=>{
+console.log(req.ip)
+res.statusCode(200).json("E Commerce Backend")
+});
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/product", productRouter);
 app.use("/api/v1/category", categoryRouter);
