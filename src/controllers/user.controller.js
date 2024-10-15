@@ -10,9 +10,9 @@ import { validation } from "../utils/validation.utils.js";
 
 */
 const registerUser = async (req, res) => {
-  const { username, number, email, userType, password, country, town, area } =
+  let { username, number, email, userType, password, country, town, area } =
     req.body;
-
+    number=parseInt(number)
   // validation
   if (!username) {
     return res.status(400).json({ error: "username is required" });
