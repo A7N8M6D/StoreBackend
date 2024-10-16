@@ -239,7 +239,7 @@ const getallUser = async (req, res) => {
 
 */
 const deleteUser = async (req, res) => {
-  const user = req.user.id;
+  const user = req.query.id;
   console.log(user);
   try {
     const UserDeleted = await User.findByIdAndDelete(user);
