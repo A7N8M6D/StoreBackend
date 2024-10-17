@@ -5,7 +5,7 @@ const storage =multer.diskStorage(
     
         destination:function(req , res, cb){
             console.log("Storage Level 0")
-        cb(null ,"../../public")
+        cb(null ,"./public")
         console.log("Storage Level 1")
         },
         filename:function(req ,file ,cb)

@@ -12,7 +12,7 @@ router.route("/Add").post(
   upload.fields([
     {
         name: "images",
-        maxCount: 1,
+        maxCount: 8,
     }
 ]),  (req, res, next) => {
   console.log("Uploaded files:", req.file);
