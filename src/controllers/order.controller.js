@@ -214,13 +214,26 @@ const UpdateOrder = async (req, res) => {
       } else if (order.status === "Processed" && status === "Shipped") {
         order.status = "Shipped";
       } else if (order.status === "Shipped" && status === "Delivered") {
-        order.status = "Delivered";
+        // Delete the order if status is updated to Delivered
+        await Order.findByIdAndDelete(OrderId);
+        return res.status(200).json({ message: "Order deleted successfully" });
       } else {
         return res.status(400).json({
           message: `Invalid status update. Current status is ${order.status}`,
         });
       }
     }
+
+    // If the order quantity has increased, update the product quantity
+    if (quantity && quantity > order.quantity) {
+      const product = await Product.findById(order.ProductId);
+      if (product) {
+        product.stock -= (quantity - order.quantity); // Adjust the stock as per your business logic
+        await product.save();
+      }
+    }
+
+    // Save the updated order if it's not deleted
     const updatedOrder = await order.save();
     if (updatedOrder) {
       return res
@@ -233,5 +246,4 @@ const UpdateOrder = async (req, res) => {
     return res.status(500).json({ message: `Error updating order: ${error}` });
   }
 };
-
 export { addOrder, getallOrder, getOrder, deleteOrder, UpdateOrder };
