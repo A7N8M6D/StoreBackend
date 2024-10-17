@@ -1,6 +1,8 @@
 import { parse } from "dotenv";
 import Product from "../models/product.model.js";
 
+import fs from 'fs';
+import path from 'path';
 
 /*
  
@@ -9,6 +11,7 @@ import Product from "../models/product.model.js";
 
 
 */
+
 const addProduct = async (req, res) => {
   try {
     console.log(`Product Add Controller`);
@@ -57,6 +60,15 @@ const addProduct = async (req, res) => {
       return res.status(400).json({ error: "Category must be a string with at least 3 characters." });
     }
 
+    // Verify if images exist in the public/temp directory
+    const tempDirectory = path.join(__dirname, 'public', 'temp'); // Adjust the path based on your directory structure
+    for (const image of images) {
+      const imagePath = path.join(tempDirectory, image);
+      if (!fs.existsSync(imagePath)) {
+        return res.status(400).json({ error: `Image not found: ${image}` });
+      }
+    }
+
     // Create Product
     const AddProduct = await Product.create({
       brand,
@@ -73,6 +85,7 @@ const addProduct = async (req, res) => {
     return res.status(500).json({ error: `Error while saving data to database: ${error.message}` });
   }
 };
+
 
 
 /*
