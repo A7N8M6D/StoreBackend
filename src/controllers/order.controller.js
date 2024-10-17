@@ -203,8 +203,6 @@ const UpdateOrder = async (req, res) => {
     // Update quantity if status is 'Pending'
     if (quantity && order.status === "Pending") {
       order.quantity = quantity;
-    }else{
-      return res.status(400).json({error:"Please wait! Product On the way"})
     }
 
     // Sequential status updates
