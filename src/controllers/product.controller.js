@@ -155,7 +155,7 @@ const getProductbyId = async (req, res) => {
     const TotalPages = Math.ceil(TotalProducts / limit);
 
     // Convert image paths to full URLs
-    const baseUrl = `${req.protocol}://${req.get("host")}/public`; // Adjust based on where your images are hosted
+    const baseUrl = `${req.protocol}://${req.get("host")}/public/temp`; // Adjust based on where your images are hosted
     const formattedProducts = UserProducts.map((product) => {
       return {
         ...product._doc, // Spread the original product object
