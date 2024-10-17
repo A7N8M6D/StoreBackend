@@ -5,19 +5,12 @@ import { addProduct, deleteProductbyId, getProductbyId, updateProduct } from "..
 const router = Router();
 router.route("/Add").post(
   authMiddleware,
-  (req, res, next) => {
-    console.log("Uploaded file:");
-    next();
-},
   upload.fields([
     {
         name: "images",
         maxCount: 8,
     }
-]),  (req, res, next) => {
-  console.log("Uploaded files:");
-  next();
-},addProduct
+]),addProduct
 );
 
 router.route("/Get").get(getProductbyId)
