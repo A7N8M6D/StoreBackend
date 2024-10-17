@@ -60,10 +60,11 @@ const addOrder = async (req, res) => {
       customer,
       ProductId,
     });
+    console.log(Order)
     if (Ordered) {
       return res.status(400).json({ message: "Order Successful", Ordered });
     } else {
-      return res.status(400).json({ message: "Error while store in db" });
+      return res.status(400).json({ error: `Error while store in db,error` });
     }
   } catch (error) {
     return res.status(500).json({ error: `Failed while save in db ${error}` });
