@@ -139,21 +139,21 @@ const getProductbyId = async (req, res) => {
     if (category.trim() !== "") {
       console.log("category");
       if (typeof category != "string") {
-        return res.status(400).json({ message: "Category Must be string" });
+        return res.status(400).json({ error: "Category Must be string" });
       }
       filter.category = category;
     }
     if (brand.trim() !== "") {
       console.log("brand");
       if (typeof brand != "string") {
-        return res.status(400).json({ message: "Category Must be string" });
+        return res.status(400).json({ error: "Category Must be string" });
       }
       filter.brand = brand;
     }
     if (search.trim() !== "") {
       console.log("search");
       if (typeof search != "string") {
-        return res.status(400).json({ message: "Category Must be string" });
+        return res.status(400).json({ error: "Category Must be string" });
       }
       filter.Name = { $regex: search, $options: "i" };
     }
@@ -174,13 +174,13 @@ const getProductbyId = async (req, res) => {
       });
     } else {
       return res.status(404).json({
-        message: "No products found",
+        error: "No products found",
       });
     }
   } catch (error) {
     return res
       .status(500)
-      .json({ message: "Failed to Fetch data from the Data base" });
+      .json({ error: "Failed to Fetch data from the Data base" });
   }
 };
 /*
