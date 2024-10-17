@@ -15,44 +15,50 @@ const addOrder = async (req, res) => {
     const { ProductId } = req.query;
     let customer = req.user.id;
     console.log(`User= ${customer}`);
+    
     if (!quantity) {
       return res.status(400).json({ error: "Quantity must not be empty" });
     }
     if (typeof quantity !== "number") {
-      return res.status(400).json({ error: "Quantity must be type of number" });
+      return res.status(400).json({ error: "Quantity must be of type number" });
     }
-    if (quantity.length < 3) {
-      return res.status(400).json({ error: "Quantity must three words" });
+    if (quantity < 1) { // Check if quantity is less than 1
+      return res.status(400).json({ error: "Quantity must be at least 1" });
     }
     if (!price) {
-      return res.status(400).json({ error: "price Not be Empty" });
+      return res.status(400).json({ error: "Price must not be empty" });
     }
     if (typeof price !== "number") {
-      return res.status(400).json({ error: "price must be type of number" });
+      return res.status(400).json({ error: "Price must be of type number" });
     }
-    if (price.length < 3) {
-      return res.status(400).json({ error: "price must three words" });
-    }
+    
     const product = await Product.findById(ProductId);
     if (!product) {
-      return res.status(400).json({ error: "Product not Found" });
+      return res.status(400).json({ error: "Product not found" });
     }
     console.log("Product Quantity ", product.quantity);
+    
     if (product.quantity < quantity) {
-      return res
-        .status(400)
-        .json({ error: `Quantity exceed available is ${product.quantity}` });
+      return res.status(400).json({ error: `Quantity exceeds available stock of ${product.quantity}` });
+    }
+
+    // Update the product's quantity and sales
+    product.quantity -= quantity;
+    product.sales += quantity;
+
+    // If quantity reaches zero, delete the product
+    if (product.quantity === 0) {
+      await Product.deleteOne({ _id: ProductId }); // Delete the product
+      console.log(`Product ${ProductId} deleted as its quantity reached zero.`);
     } else {
-      product.quantity = product.quantity - quantity;
-      product.sales = product.sales + quantity;
-      const UpdatedOrder = await product.save();
-      if (!UpdatedOrder) {
-        return res.status(400).json({ error: "Error while Updating Quantity" });
+      const updatedProduct = await product.save();
+      if (!updatedProduct) {
+        return res.status(400).json({ error: "Error while updating quantity" });
       }
     }
+
     let totalamount = quantity * price;
-    console.log(`Level 0`);
-    const Ordered = await Order.create({
+    const ordered = await Order.create({
       price,
       quantity,
       totalamount,
@@ -60,16 +66,18 @@ const addOrder = async (req, res) => {
       customer,
       ProductId,
     });
-    console.log(Ordered)
-    if (Ordered) {
-      return res.status(200).json({ message: "Order Successful", Ordered });
+
+    console.log(ordered);
+    if (ordered) {
+      return res.status(200).json({ message: "Order successful", ordered });
     } else {
-      return res.status(400).json({ error: `Error while store in db,error` });
+      return res.status(400).json({ error: "Error while storing in database" });
     }
   } catch (error) {
-    return res.status(500).json({ error: `Failed while save in db ${error}` });
+    return res.status(500).json({ error: `Failed while saving in database: ${error}` });
   }
 };
+
 /*
  
  
