@@ -1,15 +1,13 @@
-import multer from "multer";
+import multer from "multer"
 
-// Set up storage for uploaded files
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "./public/temp"); // Correctly spelled 'destination'
+      cb(null, 'public/temp')
     },
     filename: function (req, file, cb) {
-        console.log(file.originalname)
-        cb(null, file.originalname); // You can modify this to add timestamps or unique identifiers if needed
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+      cb(null, file.originalname + '-' + uniqueSuffix)
     }
-});
-
-// Create the multer upload instance
-export const upload = multer({ storage });
+  })
+  
+ export const upload = multer({ storage: storage })
