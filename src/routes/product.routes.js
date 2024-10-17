@@ -8,17 +8,18 @@ router.route("/Add").post(
   (req, res, next) => {
     console.log("Before Image Upload");
     next();
-},
-
-  upload.fields([
-    {
-        name: "images",
-        maxCount: 8,
-    }
-]),  (req, res, next) => {
-  console.log("After Image Upload");
-  next();
-},addProduct
+  },
+  (req, res, next) => {
+    upload.fields([{ name: "images", maxCount: 8 }])(req, res, (err) => {
+      if (err) {
+        console.error('Multer error:', err);
+        return res.status(400).json({ error: err.message || 'File upload error' });
+      }
+      console.log("After Image Upload");
+      next();
+    });
+  },
+  addProduct // Your product handling function
 );
 
 router.route("/Get").get(getProductbyId)

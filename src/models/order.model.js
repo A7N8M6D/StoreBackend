@@ -1,5 +1,6 @@
 import mongoose, { mongo, Schema } from "mongoose";
 
+
 const orderSchema = new Schema(
   {
     customer: {
