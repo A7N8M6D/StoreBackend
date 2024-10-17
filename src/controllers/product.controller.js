@@ -61,6 +61,7 @@ const addProduct = async (req, res) => {
     }
 
     // Verify if images exist in the public/temp directory
+    console.log("__dirname",__dirname)
     const tempDirectory = path.join(__dirname, 'public', 'temp'); // Adjust the path based on your directory structure
     for (const image of images) {
       const imagePath = path.join(tempDirectory, image);
