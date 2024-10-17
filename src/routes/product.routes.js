@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import { upload } from "../middlewares/multer.middleware.js";
+import {upload} from "../middlewares/multer.middleware.js"
 import { addProduct, deleteProductbyId, getProductbyId, updateProduct } from "../controllers/product.controller.js";
 const router = Router();
 router.route("/Add").post(
@@ -9,6 +9,7 @@ router.route("/Add").post(
     console.log("Before Image Upload");
     next();
 },
+
   upload.fields([
     {
         name: "images",
