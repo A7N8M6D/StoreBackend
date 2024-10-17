@@ -13,95 +13,51 @@ const addProduct = async (req, res) => {
   try {
     console.log(`Product Add Controller`);
     const User = req.user.id;
-    // if (!req.files || req.files.length === 0) {
-      //   return res.status(400).json({ error: "No files uploaded" });
-      // }
-      const images = req.files.images.map((file) => file.path);
-      
-      console.log(`User ${User}`);
-    console.log(`Images ${images[0]}`);
-    let { brand, quantity, price, category ,name} = req.body;
+
+    // Check for uploaded files
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: "No files uploaded" });
+    }
+
+    const images = req.files.images.map((file) => file.path);
+    
+    console.log(`User: ${User}`);
+    console.log(`Images: ${images[0]}`);
+
+    let { brand, quantity, price, category, name } = req.body;
     quantity = parseInt(quantity, 10);
     price = parseFloat(price);
-    parseInt(req.body.quantity, 10);
+
     console.log(
-      `brand=${brand},quantity=${quantity} ${typeof quantity},price=${price},category=${category}`
+      `brand=${brand}, quantity=${quantity} ${typeof quantity}, price=${price}, category=${category}`
     );
-    if (!brand) {
-      return res.status(400).json({ error: "Brand is required" });
+
+    // Brand Validation
+    if (!brand || typeof brand !== "string" || brand.length < 2) {
+      return res.status(400).json({ error: "Brand must be a string with at least 2 characters." });
     }
 
-    if (typeof brand !== "string") {
-      return res.status(400).json({ error: "Brand must be a string" });
+    // Quantity Validation
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      return res.status(400).json({ error: "Quantity must be a positive integer." });
     }
 
-    // Check for the minimum length of the brand (if you want at least 2 characters)
-    if (brand.length < 2) {
-      return res
-        .status(400)
-        .json({ error: "Brand must contain at least two characters" });
-    }
-    //Quantity Validation
-    if (!quantity) {
-      return res.status(400).json({ error: "Quantity is required" });
+    // Name Validation
+    if (!name || typeof name !== "string" || name.length < 1) {
+      return res.status(400).json({ error: "Name is required and must be a string." });
     }
 
-    if (typeof quantity !== "number") {
-      return res.status(400).json({ error: "Quantity must be a Number" });
+    // Price Validation
+    if (isNaN(price) || price <= 0) {
+      return res.status(400).json({ error: "Price must be a positive number." });
     }
 
-    // Check for the minimum length of the brand (if you want at least 2 characters)
-    if (quantity.length < 1) {
-      return res
-        .status(400)
-        .json({ error: "Quantity must contain at least two Number" });
-    }
-    //name Validation
-    if (!name) {
-      return res.status(400).json({ error: "name is required" });
+    // Category Validation
+    if (!category || typeof category !== "string" || category.length < 3) {
+      return res.status(400).json({ error: "Category must be a string with at least 3 characters." });
     }
 
-    if (typeof name !== "string") {
-      return res.status(400).json({ error: "name must be a String" });
-    }
-
-    // Check for the minimum length of the brand (if you want at least 2 characters)
-    if (name.length < 1) {
-      return res
-        .status(400)
-        .json({ error: "name must contain at least two Number" });
-    }
-
-    //Price Validation
-    if (!price) {
-      return res.status(400).json({ error: "Price is required" });
-    }
-
-    if (typeof price !== "number") {
-      return res.status(400).json({ error: "Price must be a Number" });
-    }
-
-    // Check for the minimum length of the brand (if you want at least 2 characters)
-    if (price.length < 1) {
-      return res
-        .status(400)
-        .json({ error: "Price must contain at least two Number" });
-    }
-    //Category Validation
-    if (!category) {
-      return res.status(400).json({ error: "Category is required" });
-    }
-
-    if (typeof category !== "string") {
-      return res.status(400).json({ error: "Category must be a String" });
-    }
-
-    // Check for the minimum length of the brand (if you want at least 2 characters)
-    if (category.length < 3) {
-      return res
-        .status(400)
-        .json({ error: "Category must contain at least two word" });
-    }
+    // Create Product
     const AddProduct = await Product.create({
       brand,
       images,
@@ -111,15 +67,13 @@ const addProduct = async (req, res) => {
       quantity,
       user: User,
     });
-    if (AddProduct) {
-      res.status(200).json({ message: "Product added Successful", AddProduct });
-    }
+
+    res.status(200).json({ message: "Product added successfully", AddProduct });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: `Error Wile to save data in database ${error}` });
+    return res.status(500).json({ error: `Error while saving data to database: ${error.message}` });
   }
 };
+
 
 /*
  
