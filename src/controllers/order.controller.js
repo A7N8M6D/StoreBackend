@@ -60,7 +60,7 @@ const addOrder = async (req, res) => {
       customer,
       ProductId,
     });
-    console.log(Order)
+    console.log(Ordered)
     if (Ordered) {
       return res.status(400).json({ message: "Order Successful", Ordered });
     } else {
