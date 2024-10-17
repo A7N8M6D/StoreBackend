@@ -62,7 +62,7 @@ const addOrder = async (req, res) => {
     });
     console.log(Ordered)
     if (Ordered) {
-      return res.status(400).json({ message: "Order Successful", Ordered });
+      return res.status(200).json({ message: "Order Successful", Ordered });
     } else {
       return res.status(400).json({ error: `Error while store in db,error` });
     }
