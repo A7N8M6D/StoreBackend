@@ -18,7 +18,7 @@ const addProduct = async (req, res) => {
     //   return res.status(400).json({ error: "No files uploaded" });
     // }
     const images = req.files.images.map((file) => file.path);
-   console.log(images)
+   
     console.log(`Images ${images[0]}`);
     let { brand, quantity, price, category ,name} = req.body;
     quantity = parseInt(quantity, 10);
