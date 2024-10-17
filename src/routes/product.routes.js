@@ -7,10 +7,13 @@ router.route("/Add").post(
   authMiddleware,
   upload.fields([
     {
-      name: "images",
-      maxCount:8
-    }
-  ]),addProduct
+        name: "images",
+        maxCount: 8,
+    },
+]), (req, res, next) => {
+    console.log("Uploaded files:", req.files);
+    next();
+},addProduct
 );
 
 router.route("/Get").get(getProductbyId)
