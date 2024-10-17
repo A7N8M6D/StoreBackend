@@ -6,7 +6,7 @@ const router = Router();
 router.route("/Add").post(
   authMiddleware,
   (req, res, next) => {
-    console.log("Uploaded files:", req.files);
+    console.log("Uploaded file:");
     next();
 },
   upload.fields([
@@ -15,7 +15,7 @@ router.route("/Add").post(
         maxCount: 8,
     }
 ]),  (req, res, next) => {
-  console.log("Uploaded files:", req.file);
+  console.log("Uploaded files:");
   next();
 },addProduct
 );
