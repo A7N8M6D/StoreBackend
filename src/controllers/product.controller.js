@@ -134,31 +134,18 @@ const getProductbyId = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
-    console.log(`category=${category} search=${search}, brand=${brand}`);
+
     let filter = {};
     if (category.trim() !== "") {
-      console.log("category");
-      if (typeof category != "string") {
-        return res.status(400).json({ error: "Category Must be string" });
-      }
       filter.category = category;
     }
     if (brand.trim() !== "") {
-      console.log("brand");
-      if (typeof brand != "string") {
-        return res.status(400).json({ error: "Category Must be string" });
-      }
       filter.brand = brand;
     }
     if (search.trim() !== "") {
-      console.log("search");
-      if (typeof search != "string") {
-        return res.status(400).json({ error: "Category Must be string" });
-      }
       filter.Name = { $regex: search, $options: "i" };
     }
-    // console.log(User);
-    console.log("filter", filter);
+
     const UserProducts = await Product.find(filter)
       .skip(skip)
       .limit(limit)
@@ -166,11 +153,21 @@ const getProductbyId = async (req, res) => {
 
     const TotalProducts = await Product.countDocuments(filter);
     const TotalPages = Math.ceil(TotalProducts / limit);
+
+    // Convert image paths to full URLs
+    const baseUrl = `${req.protocol}://${req.get("host")}/public`; // Adjust based on where your images are hosted
+    const formattedProducts = UserProducts.map((product) => {
+      return {
+        ...product._doc, // Spread the original product object
+        images: product.images.map((img) => `${baseUrl}/${img.replace(/\\/g, '/')}`) // Replace backslashes and add base URL
+      };
+    });
+
     if (UserProducts.length > 0) {
       return res.status(200).json({
         message: "Products retrieved successfully",
-        UserProducts,
-        TotalPages: TotalPages,
+        UserProducts: formattedProducts,
+        TotalPages,
       });
     } else {
       return res.status(404).json({
@@ -178,11 +175,10 @@ const getProductbyId = async (req, res) => {
       });
     }
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: "Failed to Fetch data from the Data base" });
+    return res.status(500).json({ error: "Failed to Fetch data from the Data base" });
   }
 };
+
 /*
  
  
