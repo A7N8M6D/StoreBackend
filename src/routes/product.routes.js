@@ -14,7 +14,10 @@ router.route("/Add").post(
         name: "images",
         maxCount: 8,
     },
-]),addProduct
+]),  (req, res, next) => {
+  console.log("Uploaded files:", req.file);
+  next();
+},addProduct
 );
 
 router.route("/Get").get(getProductbyId)
