@@ -11,6 +11,7 @@ const storage =multer.diskStorage(
         filename:function(req ,file ,cb)
         {
             console.log("File Name Level 0")
+            console.log("file.originalname||file.name",file.originalname ,file.name)
             cb(null ,file.originalname||file.name)
             console.log("File Name Level 1")
         }   
